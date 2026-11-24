@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Awards de Noël</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* VOICE: carton d'invitation de gala, sobre et festif.
+   IDEA: l'invitation noire pailletée d'or, version bulletin de vote.
+   PICTURE: pluie de paillettes dorées dense en haut et en bas, qui s'éteint vers le centre.
+   COLOUR and TYPE: noir, blanc, or ; Great Vibes en script, Montserrat léger en capitales espacées.
+   LAYOUT: tout centré comme un carton ; cartes catégorie fines, barre d'envoi en bas. */
+:root{color-scheme:dark;--bg:#0b0b0b;--card:#121212;--line:#ffffff2e;--ink:#f4f4f4;--mute:#b9b9b9;--silver:#dcdcdc}
+:root[data-theme=light],:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:72px}
+body{margin:0;background:radial-gradient(ellipse at 50% 40%,#1a1a1a 0,#0b0b0b 70%);color:var(--ink);font:300 16px/1.6 Montserrat,system-ui,sans-serif;overflow-x:clip;min-height:100vh}
+.glit{position:absolute;left:0;right:0;width:100%;pointer-events:none;z-index:0}
+#gtop{top:0;height:420px}#gbot{bottom:0;height:360px}
+.page{position:relative;min-height:100vh}
+.wrap{position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:clamp(150px,22vw,220px) max(5vw,16px) 300px}
+.caps{text-transform:uppercase;letter-spacing:.18em;font-weight:400;font-size:clamp(13px,1.6vw,16px);color:var(--ink);margin:0}
+header{text-align:center;max-width:720px;margin:0 auto}
+h1{font:400 clamp(54px,10vw,104px)/1.05 "Great Vibes",cursive;margin:14px 0 8px;color:#fff;text-shadow:0 0 24px #ffffff30}
+.lead{color:var(--mute);margin:22px auto 0;max-width:54ch;font-size:16px}
+.prog{margin:32px auto 0;max-width:360px}
+.prog .caps{font-size:13px;color:var(--mute)}
+.bar{height:2px;background:#ffffff1f;margin:12px 0;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#8a8a8a,#fff,#a9a9a9);transition:width .4s}
+.prog p{margin:0;color:var(--mute);font-size:14px}
+.tabs{display:flex;gap:10px;justify-content:center;margin:36px 0 0;flex-wrap:wrap}
+.tabs button,.btn{font:400 13px Montserrat,sans-serif;text-transform:uppercase;letter-spacing:.16em;color:var(--ink);background:none;border:1px solid #ffffff66;border-radius:99px;padding:12px 22px;min-height:44px;cursor:pointer;transition:background .3s,color .3s}
+.tabs button[aria-selected=true],.btn:hover{background:#f4f4f4;color:#0b0b0b}
+.btn:disabled{opacity:.5;cursor:default}
+.grid,.res{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));gap:20px;margin-top:44px}
+.cat{position:relative;background:#0f0f0fcc;border:1px solid var(--line);padding:30px 26px 24px;display:flex;flex-direction:column;gap:14px;text-align:center;transition:border-color .3s,box-shadow .3s}
+.cat::before{content:"";position:absolute;inset:6px;border:1px solid #ffffff12;pointer-events:none}
+.cat.done{border-color:#ffffffaa;box-shadow:0 0 30px -10px #ffffff55}
+.ico svg{width:28px;height:28px;stroke:var(--silver);fill:none;stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round}
+.cat h2{font:400 34px/1.1 "Great Vibes",cursive;margin:0;color:#fff}
+.cat .ds{margin:4px 0 0;color:var(--mute);font-size:14px}
+.tick{position:absolute;top:14px;right:16px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#fff;opacity:0;transition:opacity .3s}
+.cat.done .tick{opacity:1}
+.fld{text-align:left}
+label{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);display:block;margin-bottom:4px}
+input,textarea{width:100%;font:300 16px Montserrat,sans-serif;color:var(--ink);background:transparent;border:0;border-bottom:1px solid #ffffff40;padding:10px 2px;min-height:44px}
+textarea{resize:vertical;min-height:64px}
+input::placeholder,textarea::placeholder{color:#ffffff55}
+input:focus-visible,textarea:focus-visible{outline:none;border-bottom-color:#fff}
+button:focus-visible{outline:1px solid #fff;outline-offset:3px}
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:5;background:linear-gradient(transparent,#000 40%);padding:30px max(5vw,16px) 16px}
+.dock .in{max-width:1120px;margin:0 auto;display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:#000000d9;border:1px solid var(--line);padding:12px 14px 12px 22px;backdrop-filter:blur(6px)}
+.dock p{margin:0;color:var(--mute);font-size:14px;flex:1 1 220px}
+.note{border:1px solid var(--line);padding:16px 18px;color:var(--mute);margin:28px auto 0;max-width:720px;text-align:center}
+.res .cat ol{list-style:none;margin:0;padding:0;display:grid;gap:12px;text-align:left}
+.row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center}
+.row .n{font-weight:400}.row .c{color:var(--mute);font-variant-numeric:tabular-nums;white-space:nowrap;font-size:14px}
+.row .m{grid-column:1/-1;height:2px;background:#ffffff1a;overflow:hidden}
+.row .m i{display:block;height:100%;background:#fff}
+.row .w{grid-column:1/-1;font-size:13px;color:var(--mute);font-style:italic}
+.row:first-child .n{font-weight:500;color:#fff}
+.empty{color:var(--mute);font-size:14px;margin:0}
+footer{position:relative;z-index:1;margin-top:56px;color:var(--mute);font-size:13px;text-align:center}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+.clock{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin:26px 0 0;color:var(--mute);font-size:13px;letter-spacing:.14em;text-transform:uppercase}
+.clock b{display:block;font:300 34px/1 Montserrat,sans-serif;color:#f6dc9c;letter-spacing:0;font-variant-numeric:tabular-nums;margin-bottom:4px}
+.steps{display:flex;gap:2px;justify-content:center;flex-wrap:wrap;margin:40px 0 0}
+.steps button{width:28px;height:28px;border:0;background:none;cursor:pointer;padding:0;display:grid;place-items:center}
+.steps button::after{content:"";width:8px;height:8px;border-radius:50%;border:1px solid #ffffff66;transition:.25s}
+.steps button.ok::after{background:#e6c47a;border-color:#e6c47a}
+.steps button.on::after{width:12px;height:12px;border-color:#fff;box-shadow:0 0 10px #f6dc9c}
+.deck{display:flex;overflow-x:auto;overflow-y:hidden;transition:height .3s;scroll-snap-type:x mandatory;scrollbar-width:none;max-width:640px;margin:18px auto 0;align-items:flex-start;gap:40px;overscroll-behavior-x:contain}
+.deck::-webkit-scrollbar{display:none}
+.slide.done{box-shadow:none}
+.slide{flex:0 0 100%;scroll-snap-align:center;scroll-snap-stop:always;margin:0;padding:34px clamp(18px,4vw,36px) 26px}
+.step{font-size:12px;color:var(--mute)}
+.slide h2{font-size:42px}
+.nav{display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap;margin-top:6px}
+.nav .btn{flex:1 1 140px}
+.btn.ghost{border-color:#ffffff33;color:var(--mute)}
+.btn.go{border-color:#e6c47a;color:#f6dc9c}
+.btn.go:hover{background:#f6dc9c;color:#120d05}
+.slide.done .go{background:linear-gradient(100deg,#c99a4c,#f6dc9c 45%,#d4a856);color:#120d05;border-color:transparent}
+.recap ol{list-style:none;margin:0;padding:0;text-align:left}
+.recap li button{width:100%;display:flex;justify-content:space-between;gap:12px;background:none;border:0;border-bottom:1px solid #ffffff1a;color:var(--ink);font:300 15px Montserrat,sans-serif;padding:12px 2px;min-height:44px;cursor:pointer;text-align:left}
+.recap li button:hover span{color:#f6dc9c}
+.recap li b{font-weight:500;color:#f6dc9c;text-align:right}
+.recap li em{font-style:normal;color:#ffffff55;font-weight:300}
+#status{color:var(--mute);font-size:14px;margin:4px 0 0}
+.cat.done{border-color:#e6c47aaa;box-shadow:0 0 30px -10px #e6c47a66}
+.tick{color:#f6dc9c}
+#mailbox{margin-top:18px}
+.recap li button:disabled{cursor:default}
+.blist ol{list-style:none;margin:0;padding:0;text-align:left}
+.blist li{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;padding:10px 0;border-bottom:1px solid #ffffff1a}
+.blist li span:first-child{flex:1 1 200px;color:var(--ink);overflow-wrap:anywhere}
+.blist .dt{font-size:13px;white-space:nowrap}
+.blist .del{padding:8px 14px;font-size:11px;min-height:40px}
+.find{max-width:640px;margin:28px auto 0;text-align:center;color:var(--mute)}
+.find summary{cursor:pointer;font-size:14px;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center;list-style:none}
+.find summary::-webkit-details-marker{display:none}
+.find[open] summary{color:#f6dc9c}
+.find .fld{max-width:420px;margin:10px auto 0}
+#fstat{font-size:14px;margin:12px 0 0}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="page">
+<canvas class="glit" id="gtop" aria-hidden="true"></canvas>
+<canvas class="glit" id="gbot" aria-hidden="true"></canvas>
+<div class="wrap">
+  <header>
+    <p class="caps">Votez pour vos collègues</p>
+    <h1>Les Awards de Noël</h1>
+    <p class="caps">Soirée de Noël</p>
+    <p class="lead">Proposez la ou le collègue qui mérite de briller dans chaque catégorie. Un clic par award, et le tour est joué ! Un petit regret ? Le lien reçu par email après votre vote vous permet de corriger votre bulletin : la nouvelle version remplace simplement la précédente. Vous avez jusqu'au mercredi 9 décembre, 17h… tic, tac, tic, tac.</p>
+    <p class="clock" id="clock" aria-live="off"></p>
+    <div class="prog" aria-live="polite">
+      <p class="caps"><span id="pcount">0</span> / 10 catégories</p>
+      <div class="bar"><i id="pbar"></i></div>
+      <p id="pmsg">Votre bulletin est vide pour l'instant.</p>
+    </div>
+  </header>
+
+  <div id="offline" class="note" hidden>Le site n'est pas encore relié à la feuille de votes : renseignez SCRIPT_URL dans index.html.</div>
+
+  <section id="vote" aria-roledescription="carrousel">
+    <div class="steps" id="steps"></div>
+    <div class="deck" id="deck"></div>
+  </section>
+
+  <details class="find" id="find">
+    <summary>Déjà voté ? Recevoir mon lien de modification</summary>
+    <div class="fld"><label for="fmail">Votre adresse email</label><input id="fmail" type="email" autocomplete="email" maxlength="120" placeholder="prenom.nom@entreprise.fr"></div>
+    <p style="margin:12px 0 0"><button class="btn" id="fsend" type="button">Recevoir le lien</button></p>
+    <p id="fstat" aria-live="polite"></p>
+  </details>
+
+  <footer>Un seul bulletin par personne · Vos nominations ne sont visibles que par l'organisatrice.</footer>
+</div>
+</div>
+
+<script>
+{
+const IC={
+ team:'<circle cx="8" cy="8" r="3"/><circle cx="16" cy="8" r="3"/><path d="M2 20c0-3.3 2.7-6 6-6s6 2.7 6 6M10 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/>',
+ inno:'<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.8.8 1 1.5 1 2.5h6c0-1 .2-1.7 1-2.5A6 6 0 0 0 12 3z"/>',
+ crea:'<path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.5-.8 1.2-1.6-.4-1 .2-2.4 1.6-2.4H17a4 4 0 0 0 4-4c0-5.5-4-10-9-10z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="15" cy="7.5" r="1"/>',
+ meme:'<path d="M3 8l4 4 5-7 5 7 4-4-2 11H5z"/><path d="M5 19h14"/>',
+ food:'<path d="M5 11h14l-1.5 9h-11z"/><path d="M7 11a5 5 0 0 1 10 0M12 4v2"/>',
+ meet:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 15l2.5 2.5L16 13"/>',
+ sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+ sport:'<path d="M6 9v6M18 9v6M3 11v2M21 11v2M6 12h12"/>',
+ zen:'<path d="M12 20c-4 0-8-3-8-7 3 0 6 1.5 8 4 2-2.5 5-4 8-4 0 4-4 7-8 7z"/><path d="M12 17c-2-2.5-2-7 0-11 2 4 2 8.5 0 11z"/>',
+ pb:'<path d="M14.7 6.3a4 4 0 0 0-5.4 5.2L3 17.8V21h3.2l6.3-6.3a4 4 0 0 0 5.2-5.4l-2.5 2.5-2.3-.7-.7-2.3z"/>'
+};
+const CATS=[
+ {id:'team',t:'Team spirit',d:"Toujours partant·e pour filer un coup de main : avec elle ou lui, le collectif passe avant tout."},
+ {id:'inno',t:'Innovation',d:"L'idée qui a bousculé nos habitudes… au point qu'on se demande comment on faisait avant."},
+ {id:'crea',t:'Créativité',d:"Une idée de génie à la minute et une touche que personne n'avait vue venir."},
+ {id:'meme',t:'Le roi / la reine des mèmes',d:"Le bon GIF, au bon moment, dans le bon canal. Un art à part entière."},
+ {id:'food',t:'Le plus gourmand',d:"Radar intégré pour la moindre viennoiserie déposée en salle de pause."},
+ {id:'meet',t:'Meeting survivor',d:"Agenda plein à craquer, café à la main, et toujours vaillant·e à la septième réunion de la journée."},
+ {id:'sun',t:'Le rayon de soleil',d:"Une bonne humeur contagieuse, même un lundi matin de novembre."},
+ {id:'sport',t:'Le plus sportif',d:"Vélotaf, footing du midi ou escaliers plutôt qu'ascenseur : rien ne l'arrête."},
+ {id:'zen',t:'Le plus zen',d:"Deadline, bug ou imprévu : elle ou il respire… et tout finit par s'arranger."},
+ {id:'pb',t:'Le pb solver',d:"Un problème ? Elle ou il a déjà trois solutions sous le coude."}
+];
+/* ====== À RENSEIGNER : URL de l'application web Google Apps Script (se termine par /exec) ====== */
+const SCRIPT_URL='';
+const DEADLINE=Date.parse('2026-12-09T17:00:00+01:00');
+const LS='xmas-awards-2026';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const N=CATS.length;
+$('#deck').innerHTML=CATS.map((c,i)=>`<article class="cat slide" id="c-${c.id}" aria-label="Award ${i+1} sur ${N}">
+ <span class="tick">Nominé·e</span>
+ <p class="caps step">Award ${i+1} / ${N}</p>
+ <span class="ico"><svg viewBox="0 0 24 24">${IC[c.id]}</svg></span>
+ <div><h2>${c.t}</h2><p class="ds">${c.d}</p></div>
+ <div class="fld"><label for="n-${c.id}">Prénom et nom du ou de la nominé·e</label><input id="n-${c.id}" data-k="${c.id}" maxlength="80" autocomplete="off" placeholder="Prénom Nom"></div>
+ <div class="fld"><label for="r-${c.id}">Une anecdote ? <span style="opacity:.7">(facultatif)</span></label><textarea id="r-${c.id}" data-k="${c.id}" maxlength="400" rows="3" placeholder="Le moment qui vous a fait penser à elle ou lui…"></textarea></div>
+ <div class="nav">
+  <button class="btn ghost prev" type="button" ${i?'':'disabled'}>Précédent</button>
+  <button class="btn go" type="button" data-i="${i}">Passer</button>
+ </div>
+</article>`).join('')+`<article class="cat slide recap" id="recap" aria-label="Récapitulatif">
+ <p class="caps step">Récapitulatif</p>
+ <h2>Votre bulletin</h2>
+ <ol id="rlist"></ol>
+ <div class="fld" id="mailbox"><label for="mail">Votre adresse email</label><input id="mail" type="email" autocomplete="email" maxlength="120" placeholder="prenom.nom@entreprise.fr"></div>
+ <p id="status">Vérifiez vos choix puis soumettez : vous recevrez un email de confirmation avec un lien pour modifier votre bulletin.</p>
+ <div class="nav" id="dnav" hidden><button class="btn" id="reedit" type="button">Modifier mon bulletin</button></div><div class="nav" id="snav"><button class="btn ghost prev" type="button">Précédent</button><button class="btn submit" id="submit" type="button">Soumettre mon bulletin</button></div>
+</article>`;
+$('#steps').innerHTML=[...CATS.map((c,i)=>`<button type="button" data-i="${i}" aria-label="${c.t}"></button>`),`<button type="button" data-i="${N}" aria-label="Récapitulatif"></button>`].join('');
+
+let sel={},idx=0,done=false,token='',editing=false;
+const post=async o=>{const r=await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify(o)});return r.json()};
+const store={get(){try{return JSON.parse(localStorage.getItem(LS)||'null')}catch(e){return null}},set(v){try{localStorage.setItem(LS,JSON.stringify(v))}catch(e){}}};
+const closed=()=>Date.now()>=DEADLINE;
+const status=t=>{$('#status').textContent=t};
+const val=k=>({n:$('#n-'+k).value.trim(),r:$('#r-'+k).value.trim()});
+function btnLabel(k){const b=document.querySelector(`#c-${k} .go`);if(b)b.textContent=val(k).n?(sel[k]?'Valider':'Valider et continuer'):'Passer'}
+function refresh(){
+  const k=Object.keys(sel).length;
+  for(const c of CATS){$('#c-'+c.id).classList.toggle('done',!!sel[c.id]);btnLabel(c.id)}
+  $('#pcount').textContent=k;$('#pbar').style.width=(k*10)+'%';
+  $('#pmsg').textContent=k===0?"Votre bulletin est vide pour l'instant.":k===10?'Bulletin complet, bravo !':`Encore ${10-k} catégorie${10-k>1?'s':''} possible${10-k>1?'s':''}.`;
+  $('#rlist').innerHTML=CATS.map((c,i)=>`<li><button type="button" data-i="${i}" ${done?'disabled':''}><span>${c.t}</span><b>${sel[c.id]?esc(sel[c.id].n):'<em>Passé</em>'}</b></button></li>`).join('');
+  for(const b of document.querySelectorAll('#steps button')){const i=+b.dataset.i;b.classList.toggle('on',i===idx);b.classList.toggle('ok',i<N&&!!sel[CATS[i].id])}
+}
+function commit(k){if(!k||closed()||done)return;const v=val(k);
+  if(v.n)sel[k]=v.r?v:{n:v.n};else delete sel[k];refresh();if(!editing)store.set({cats:sel,email:$('#mail').value.trim(),token})}
+const okMail=m=>/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(m);
+const ERR={closed:'Les votes sont clos.',domain:'Utilisez votre adresse email professionnelle.',email:'Adresse email invalide.',empty:'Choisissez au moins un·e nominé·e avant de soumettre.',
+  exists:'Un bulletin existe déjà pour cette adresse. Nous venons de vous envoyer par email un lien pour le modifier.',token:'Ce lien de modification n’est plus valide. Demandez-en un nouveau en bas de la page.'};
+async function submit(){
+  if(done||closed())return;
+  const k=Object.keys(sel).length,mail=$('#mail').value.trim();
+  if(!k){status(ERR.empty);return}
+  if(!okMail(mail)){status('Indiquez une adresse email valide.');$('#mail').focus();return}
+  if(!editing)store.set({cats:sel,email:mail,token});
+  if(!SCRIPT_URL){status("Le site n'est pas encore relié à la feuille de votes.");return}
+  const b=$('#submit');b.disabled=true;status('Envoi en cours…');
+  const doc={cats:JSON.parse(JSON.stringify(sel)),email:mail};
+  try{
+    const j=await post({action:'submit',...doc,token});
+    b.disabled=false;
+    if(!j.ok){status(ERR[j.error]||"L'envoi n'a pas abouti. Réessayez.");return}
+    if(j.token)token=j.token;
+    store.set({...doc,token,submitted:true});showDone(doc,j.updated);
+  }catch(e){b.disabled=false;status("L'envoi n'a pas abouti (connexion). Réessayez dans un instant.")}
+}
+function fillFrom(d){sel={};for(const c of CATS){const e=d.cats?.[c.id];if(e?.n){sel[c.id]=e.r?{n:String(e.n),r:String(e.r)}:{n:String(e.n)}}
+  $('#n-'+c.id).value=sel[c.id]?.n||'';$('#r-'+c.id).value=sel[c.id]?.r||''}}
+function setLocked(v){for(const el of deck.querySelectorAll('input,textarea,.go,.prev,#submit,#rlist button'))el.disabled=v}
+function showDone(d,updated){done=true;fillFrom(d);setLocked(true);
+  $('#mailbox').hidden=true;$('#snav').hidden=true;$('#dnav').hidden=!token||closed();
+  $('#recap h2').textContent=updated?'Bulletin mis à jour !':'Merci pour votre vote !';
+  $('#status').textContent=(updated?'Votre nouvelle version remplace la précédente. ':'Votre bulletin a bien été enregistré. ')+'Un email de confirmation vous a été envoyé avec un lien pour le modifier jusqu’au 9 décembre, 17h.';
+  refresh();go(N,false)}
+function reopen(){done=false;setLocked(false);$('#mailbox').hidden=false;$('#mail').readOnly=!!token;$('#snav').hidden=false;$('#dnav').hidden=true;
+  for(const el of deck.querySelectorAll('.slide:first-child .prev'))el.disabled=true;
+  $('#recap h2').textContent='Votre bulletin';status('Modifiez vos choix puis soumettez à nouveau : la nouvelle version remplacera la précédente.');$('#submit').textContent='Soumettre la nouvelle version';refresh();go(0)}
+const deck=$('#deck');
+function fit(i){const el=deck.children[i];if(el)deck.style.height=el.offsetHeight+'px'}
+const ro=new ResizeObserver(()=>fit(idx));for(const el of deck.children)ro.observe(el);
+function go(i,smooth=true){i=Math.max(0,Math.min(N,i));const el=deck.children[i];fit(i);
+  deck.scrollTo({left:el.offsetLeft-deck.offsetLeft,behavior:smooth&&!matchMedia('(prefers-reduced-motion: reduce)').matches?'smooth':'auto'})}
+let st;deck.addEventListener('scroll',()=>{clearTimeout(st);st=setTimeout(()=>{
+  const i=Math.round(deck.scrollLeft/(deck.clientWidth+40));if(i!==idx){if(idx<N)commit(CATS[idx].id);idx=i;refresh()}fit(idx);},90)});
+deck.addEventListener('click',e=>{
+  const g=e.target.closest('.go');if(g){const i=+g.dataset.i,k=CATS[i].id;commit(k);go(i+1);return}
+  if(e.target.closest('.prev')){go(idx-1);return}
+  const r=e.target.closest('#rlist button');if(r){go(+r.dataset.i);return}
+  if(e.target.closest('#submit'))submit();
+  if(e.target.closest('#reedit'))reopen();
+});
+deck.addEventListener('input',e=>{const k=e.target.dataset.k;if(k)btnLabel(k)});
+deck.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='mail'){e.preventDefault();submit();return}if(e.key==='Enter'&&e.target.tagName==='INPUT'){e.preventDefault();const b=e.target.closest('.slide').querySelector('.go');b&&b.click()}});
+$('#steps').addEventListener('click',e=>{const b=e.target.closest('button');if(b)go(+b.dataset.i)});
+addEventListener('keydown',e=>{if(/INPUT|TEXTAREA/.test(document.activeElement?.tagName))return;if(e.key==='ArrowRight')go(idx+1);if(e.key==='ArrowLeft')go(idx-1)});
+addEventListener('resize',()=>go(idx,false));
+function sparkle(b){if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;b.closest('.slide').animate([{boxShadow:'0 0 0 0 #e6c47a00'},{boxShadow:'0 0 60px 4px #e6c47a88'},{boxShadow:'0 0 30px -10px #e6c47a66'}],{duration:900})}
+function lock(){setLocked(true);$('#dnav').hidden=true;$('#snav').hidden=true}
+refresh();
+
+/* compte à rebours */
+function tickClock(){const ms=DEADLINE-Date.now(),el=$('#clock');
+  if(ms<=0){el.textContent='Les votes sont clos. Rendez-vous à la soirée !';lock();status('Les votes sont clos.');return false}
+  const s=Math.floor(ms/1000),d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60),x=s%60;
+  el.innerHTML=[[d,'j'],[h,'h'],[m,'min'],[x,'s']].map(([v,u])=>`<span><b>${String(v).padStart(2,'0')}</b>${u}</span>`).join('');return true}
+if(tickClock()){const ct=setInterval(()=>{if(!tickClock())clearInterval(ct)},1000)}
+
+/* reprise : lien de modification reçu par email, sinon brouillon ou bulletin de ce navigateur */
+if(!SCRIPT_URL)$('#offline').hidden=false;
+(async()=>{
+  const q=new URLSearchParams(location.search).get('edit');
+  if(q&&SCRIPT_URL){
+    history.replaceState(null,'',location.pathname);
+    status('Chargement de votre bulletin…');go(N,false);
+    try{const j=await post({action:'get',token:q});
+      if(j.ok){token=q;editing=false;$('#mail').value=j.email;fillFrom(j);store.set({cats:sel,email:j.email,token,submitted:true});
+        if(closed()){showDone(j,false);return}reopen();return}
+      status(ERR.token)}catch(e){status("Impossible de charger votre bulletin (connexion).")}
+    return}
+  const d=store.get();if(!d)return;
+  if(d.email)$('#mail').value=d.email;if(d.token)token=d.token;
+  if(d.submitted)showDone(d,false);else if(d.cats){fillFrom(d);refresh()}
+})();
+$('#fsend').addEventListener('click',async()=>{const m=$('#fmail').value.trim(),st=$('#fstat');
+  if(!okMail(m)){st.textContent='Indiquez une adresse email valide.';return}
+  if(!SCRIPT_URL){st.textContent="Le site n'est pas encore relié à la feuille de votes.";return}
+  const b=$('#fsend');b.disabled=true;st.textContent='Envoi…';
+  try{await post({action:'resend',email:m});st.textContent='Si un bulletin existe pour cette adresse, un email avec votre lien de modification vient de partir. Pensez à vérifier vos spams.'}
+  catch(e){st.textContent="L'envoi n'a pas abouti. Réessayez."}
+  b.disabled=false});
+
+/* paillettes dorées */
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const G=[];
+function setup(cv,fromTop){
+  const cx=cv.getContext('2d'),r=devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;
+  cv.width=W*r;cv.height=H*r;cx.setTransform(r,0,0,r,0,0);
+  const n=Math.round(W*H/150),pts=[];
+  for(let i=0;i<n;i++){const t=Math.pow(Math.random(),3);const y=fromTop?t*H:H-t*H;
+    pts.push({x:Math.random()*W,y,s:Math.random()<.08?Math.random()*2.2+1.2:Math.random()*1.1+.25,a:(1-t)*.9+.08,
+      g:['#fff3cf','#f6dc9c','#e6c47a','#c9984a','#a87a32'][Math.floor(Math.random()*5)],p:Math.random()*6.28,v:Math.random()*.05+.01,tw:Math.random()<.18})}
+  return {cv,cx,W,H,pts};
+}
+function draw(o){const{cx,W,H,pts}=o;cx.clearRect(0,0,W,H);
+  for(const q of pts){let a=q.a;if(q.tw){q.p+=q.v;a*=.35+.65*(Math.sin(q.p)+1)/2}
+    cx.globalAlpha=a;cx.fillStyle=q.g;cx.beginPath();cx.arc(q.x,q.y,q.s,0,6.28);cx.fill();
+    if(q.s>3.2&&a>.85){cx.globalAlpha=a*.5;cx.fillRect(q.x-q.s*3,q.y-.3,q.s*6,.6);cx.fillRect(q.x-.3,q.y-q.s*3,.6,q.s*6)}}
+  cx.globalAlpha=1}
+function init(){G.length=0;G.push(setup($('#gtop'),true),setup($('#gbot'),false));G.forEach(draw)}
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(init,150)});init();
+if(!reduce)(function loop(){G.forEach(draw);requestAnimationFrame(loop)})();
+
+}
+</script>
+</body>
+</html>
