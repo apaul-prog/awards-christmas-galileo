@@ -117,7 +117,7 @@ footer{position:relative;z-index:1;margin-top:56px;color:var(--mute);font-size:1
     <p class="caps">Votez pour vos collègues</p>
     <h1>Les Awards de Noël</h1>
     <p class="caps">Soirée de Noël</p>
-    <p class="lead">Proposez la ou le collègue qui mérite de briller dans chaque catégorie. Un clic par award, et le tour est joué ! Un petit regret ? Le lien reçu par email après votre vote vous permet de corriger votre bulletin : la nouvelle version remplace simplement la précédente. Vous avez jusqu'au mercredi 9 décembre, 17h… tic, tac, tic, tac.</p>
+    <p class="lead">Proposez la ou le collègue qui mérite de briller dans chaque catégorie. Un clic par award, et le tour est joué ! Un petit regret ? Revenez sur ce site, modifiez vos choix et soumettez à nouveau avec la même adresse email : seul votre dernier envoi sera pris en compte. Vous avez jusqu'au mercredi 9 décembre, 17h… tic, tac, tic, tac.</p>
     <p class="clock" id="clock" aria-live="off"></p>
     <div class="prog" aria-live="polite">
       <p class="caps"><span id="pcount">0</span> / 10 catégories</p>
@@ -126,21 +126,14 @@ footer{position:relative;z-index:1;margin-top:56px;color:var(--mute);font-size:1
     </div>
   </header>
 
-  <div id="offline" class="note" hidden>Le site n'est pas encore relié à la feuille de votes : renseignez SCRIPT_URL dans index.html.</div>
+  <div id="offline" class="note" hidden>Le site n'est pas encore relié à la feuille de votes : collez le lien pré-rempli du formulaire Google dans FORM_PREFILL, dans index.html.</div>
 
   <section id="vote" aria-roledescription="carrousel">
     <div class="steps" id="steps"></div>
     <div class="deck" id="deck"></div>
   </section>
 
-  <details class="find" id="find">
-    <summary>Déjà voté ? Recevoir mon lien de modification</summary>
-    <div class="fld"><label for="fmail">Votre adresse email</label><input id="fmail" type="email" autocomplete="email" maxlength="120" placeholder="prenom.nom@entreprise.fr"></div>
-    <p style="margin:12px 0 0"><button class="btn" id="fsend" type="button">Recevoir le lien</button></p>
-    <p id="fstat" aria-live="polite"></p>
-  </details>
-
-  <footer>Un seul bulletin par personne · Vos nominations ne sont visibles que par l'organisatrice.</footer>
+  <footer>Seul votre dernier envoi compte · Vos nominations ne sont visibles que par l'organisatrice.</footer>
 </div>
 </div>
 
@@ -170,8 +163,9 @@ const CATS=[
  {id:'zen',t:'Le plus zen',d:"Deadline, bug ou imprévu : elle ou il respire… et tout finit par s'arranger."},
  {id:'pb',t:'Le pb solver',d:"Un problème ? Elle ou il a déjà trois solutions sous le coude."}
 ];
-/* ====== À RENSEIGNER : URL de l'application web Google Apps Script (se termine par /exec) ====== */
-const SCRIPT_URL='';
+/* ====== À RENSEIGNER : lien pré-rempli du formulaire Google (voir README, étape 2) ======
+   Dans le lien, la question 1 doit contenir 1, la question 2 contenir 2, … jusqu'à 21. */
+const FORM_PREFILL='';
 const DEADLINE=Date.parse('2026-12-09T17:00:00+01:00');
 const LS='xmas-awards-2026';
 const $=s=>document.querySelector(s);
@@ -193,13 +187,17 @@ $('#deck').innerHTML=CATS.map((c,i)=>`<article class="cat slide" id="c-${c.id}" 
  <h2>Votre bulletin</h2>
  <ol id="rlist"></ol>
  <div class="fld" id="mailbox"><label for="mail">Votre adresse email</label><input id="mail" type="email" autocomplete="email" maxlength="120" placeholder="prenom.nom@entreprise.fr"></div>
- <p id="status">Vérifiez vos choix puis soumettez : vous recevrez un email de confirmation avec un lien pour modifier votre bulletin.</p>
- <div class="nav" id="dnav" hidden><button class="btn" id="reedit" type="button">Modifier mon bulletin</button></div><div class="nav" id="snav"><button class="btn ghost prev" type="button">Précédent</button><button class="btn submit" id="submit" type="button">Soumettre mon bulletin</button></div>
+ <p id="status">Vérifiez vos choix puis soumettez. Vous pourrez revenir les modifier : seul votre dernier envoi comptera.</p>
+ <div class="nav" id="dnav" hidden><button class="btn" id="reedit" type="button">Modifier et renvoyer</button></div><div class="nav" id="snav"><button class="btn ghost prev" type="button">Précédent</button><button class="btn submit" id="submit" type="button">Soumettre mon bulletin</button></div>
 </article>`;
 $('#steps').innerHTML=[...CATS.map((c,i)=>`<button type="button" data-i="${i}" aria-label="${c.t}"></button>`),`<button type="button" data-i="${N}" aria-label="Récapitulatif"></button>`].join('');
 
-let sel={},idx=0,done=false,token='',editing=false;
-const post=async o=>{const r=await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify(o)});return r.json()};
+let sel={},idx=0,done=false,sentOnce=false;
+/* Lecture du lien pré-rempli : adresse d'envoi + identifiant de chaque question (rangés par numéro 1 à 21) */
+const FORM=(()=>{try{if(!FORM_PREFILL)return null;const u=new URL(FORM_PREFILL),ids=[];
+  for(const [k,v] of u.searchParams)if(/^entry\.\d+$/.test(k)&&/^\d+$/.test(v.trim()))ids[+v.trim()]=k;
+  const need=1+CATS.length*2;for(let i=1;i<=need;i++)if(!ids[i])return null;
+  return {action:u.origin+u.pathname.replace(/\/viewform$/,'/formResponse'),ids}}catch(e){return null}})();
 const store={get(){try{return JSON.parse(localStorage.getItem(LS)||'null')}catch(e){return null}},set(v){try{localStorage.setItem(LS,JSON.stringify(v))}catch(e){}}};
 const closed=()=>Date.now()>=DEADLINE;
 const status=t=>{$('#status').textContent=t};
@@ -214,36 +212,34 @@ function refresh(){
   for(const b of document.querySelectorAll('#steps button')){const i=+b.dataset.i;b.classList.toggle('on',i===idx);b.classList.toggle('ok',i<N&&!!sel[CATS[i].id])}
 }
 function commit(k){if(!k||closed()||done)return;const v=val(k);
-  if(v.n)sel[k]=v.r?v:{n:v.n};else delete sel[k];refresh();if(!editing)store.set({cats:sel,email:$('#mail').value.trim(),token})}
+  if(v.n)sel[k]=v.r?v:{n:v.n};else delete sel[k];refresh();store.set({cats:sel,email:$('#mail').value.trim(),sent:sentOnce})}
 const okMail=m=>/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(m);
-const ERR={closed:'Les votes sont clos.',domain:'Utilisez votre adresse email professionnelle.',email:'Adresse email invalide.',empty:'Choisissez au moins un·e nominé·e avant de soumettre.',
-  exists:'Un bulletin existe déjà pour cette adresse. Nous venons de vous envoyer par email un lien pour le modifier.',token:'Ce lien de modification n’est plus valide. Demandez-en un nouveau en bas de la page.'};
 async function submit(){
   if(done||closed())return;
-  const k=Object.keys(sel).length,mail=$('#mail').value.trim();
-  if(!k){status(ERR.empty);return}
+  const k=Object.keys(sel).length,mail=$('#mail').value.trim().toLowerCase();
+  if(!k){status('Choisissez au moins un·e nominé·e avant de soumettre.');return}
   if(!okMail(mail)){status('Indiquez une adresse email valide.');$('#mail').focus();return}
-  if(!editing)store.set({cats:sel,email:mail,token});
-  if(!SCRIPT_URL){status("Le site n'est pas encore relié à la feuille de votes.");return}
+  store.set({cats:sel,email:mail,sent:sentOnce});
+  if(!FORM){status("Le site n'est pas encore relié au formulaire de votes.");return}
   const b=$('#submit');b.disabled=true;status('Envoi en cours…');
-  const doc={cats:JSON.parse(JSON.stringify(sel)),email:mail};
+  const body=new URLSearchParams();body.append(FORM.ids[1],mail);
+  CATS.forEach((c,i)=>{body.append(FORM.ids[2+i*2],sel[c.id]?.n||'');body.append(FORM.ids[3+i*2],sel[c.id]?.r||'')});
   try{
-    const j=await post({action:'submit',...doc,token});
-    b.disabled=false;
-    if(!j.ok){status(ERR[j.error]||"L'envoi n'a pas abouti. Réessayez.");return}
-    if(j.token)token=j.token;
-    store.set({...doc,token,submitted:true});showDone(doc,j.updated);
+    await fetch(FORM.action,{method:'POST',mode:'no-cors',body});
+    const doc={cats:JSON.parse(JSON.stringify(sel)),email:mail};
+    const again=sentOnce;sentOnce=true;
+    store.set({...doc,submitted:true,sent:true});showDone(doc,again);b.disabled=false;
   }catch(e){b.disabled=false;status("L'envoi n'a pas abouti (connexion). Réessayez dans un instant.")}
 }
 function fillFrom(d){sel={};for(const c of CATS){const e=d.cats?.[c.id];if(e?.n){sel[c.id]=e.r?{n:String(e.n),r:String(e.r)}:{n:String(e.n)}}
   $('#n-'+c.id).value=sel[c.id]?.n||'';$('#r-'+c.id).value=sel[c.id]?.r||''}}
 function setLocked(v){for(const el of deck.querySelectorAll('input,textarea,.go,.prev,#submit,#rlist button'))el.disabled=v}
 function showDone(d,updated){done=true;fillFrom(d);setLocked(true);
-  $('#mailbox').hidden=true;$('#snav').hidden=true;$('#dnav').hidden=!token||closed();
+  $('#mailbox').hidden=true;$('#snav').hidden=true;$('#dnav').hidden=closed();
   $('#recap h2').textContent=updated?'Bulletin mis à jour !':'Merci pour votre vote !';
-  $('#status').textContent=(updated?'Votre nouvelle version remplace la précédente. ':'Votre bulletin a bien été enregistré. ')+'Un email de confirmation vous a été envoyé avec un lien pour le modifier jusqu’au 9 décembre, 17h.';
+  $('#status').textContent=(updated?'Votre nouvelle version remplace la précédente. ':'Votre bulletin a bien été enregistré. ')+'Vous pouvez encore le modifier et le renvoyer jusqu’au 9 décembre, 17h : seul votre dernier envoi comptera.';
   refresh();go(N,false)}
-function reopen(){done=false;setLocked(false);$('#mailbox').hidden=false;$('#mail').readOnly=!!token;$('#snav').hidden=false;$('#dnav').hidden=true;
+function reopen(){done=false;setLocked(false);$('#mailbox').hidden=false;$('#snav').hidden=false;$('#dnav').hidden=true;
   for(const el of deck.querySelectorAll('.slide:first-child .prev'))el.disabled=true;
   $('#recap h2').textContent='Votre bulletin';status('Modifiez vos choix puis soumettez à nouveau : la nouvelle version remplacera la précédente.');$('#submit').textContent='Soumettre la nouvelle version';refresh();go(0)}
 const deck=$('#deck');
@@ -276,29 +272,9 @@ function tickClock(){const ms=DEADLINE-Date.now(),el=$('#clock');
   el.innerHTML=[[d,'j'],[h,'h'],[m,'min'],[x,'s']].map(([v,u])=>`<span><b>${String(v).padStart(2,'0')}</b>${u}</span>`).join('');return true}
 if(tickClock()){const ct=setInterval(()=>{if(!tickClock())clearInterval(ct)},1000)}
 
-/* reprise : lien de modification reçu par email, sinon brouillon ou bulletin de ce navigateur */
-if(!SCRIPT_URL)$('#offline').hidden=false;
-(async()=>{
-  const q=new URLSearchParams(location.search).get('edit');
-  if(q&&SCRIPT_URL){
-    history.replaceState(null,'',location.pathname);
-    status('Chargement de votre bulletin…');go(N,false);
-    try{const j=await post({action:'get',token:q});
-      if(j.ok){token=q;editing=false;$('#mail').value=j.email;fillFrom(j);store.set({cats:sel,email:j.email,token,submitted:true});
-        if(closed()){showDone(j,false);return}reopen();return}
-      status(ERR.token)}catch(e){status("Impossible de charger votre bulletin (connexion).")}
-    return}
-  const d=store.get();if(!d)return;
-  if(d.email)$('#mail').value=d.email;if(d.token)token=d.token;
-  if(d.submitted)showDone(d,false);else if(d.cats){fillFrom(d);refresh()}
-})();
-$('#fsend').addEventListener('click',async()=>{const m=$('#fmail').value.trim(),st=$('#fstat');
-  if(!okMail(m)){st.textContent='Indiquez une adresse email valide.';return}
-  if(!SCRIPT_URL){st.textContent="Le site n'est pas encore relié à la feuille de votes.";return}
-  const b=$('#fsend');b.disabled=true;st.textContent='Envoi…';
-  try{await post({action:'resend',email:m});st.textContent='Si un bulletin existe pour cette adresse, un email avec votre lien de modification vient de partir. Pensez à vérifier vos spams.'}
-  catch(e){st.textContent="L'envoi n'a pas abouti. Réessayez."}
-  b.disabled=false});
+/* reprise du brouillon ou du dernier envoi depuis ce navigateur */
+if(!FORM)$('#offline').hidden=false;
+{const d=store.get();if(d){sentOnce=!!d.sent;if(d.email)$('#mail').value=d.email;if(d.submitted)showDone(d,false);else if(d.cats){fillFrom(d);refresh()}}}
 
 /* paillettes dorées */
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
