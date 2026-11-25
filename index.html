@@ -164,7 +164,8 @@ const CATS=[
  {id:'pb',t:'Le pb solver',d:"Un problème ? Elle ou il a déjà trois solutions sous le coude."}
 ];
 /* ====== À RENSEIGNER : lien pré-rempli du formulaire Google (voir README, étape 2) ======
-   Dans le lien, la question 1 doit contenir 1, la question 2 contenir 2, … jusqu'à 21. */
+   Dans le lien pré-rempli, tapez 1 dans « Team spirit — nominé·e », 2 dans « Team spirit — anecdote »,
+   … jusqu'à 20 dans « Pb solver — anecdote ». L'email est collecté par Google Forms lui-même. */
 const FORM_PREFILL='';
 const DEADLINE=Date.parse('2026-12-09T17:00:00+01:00');
 const LS='xmas-awards-2026';
@@ -196,7 +197,10 @@ let sel={},idx=0,done=false,sentOnce=false;
 /* Lecture du lien pré-rempli : adresse d'envoi + identifiant de chaque question (rangés par numéro 1 à 21) */
 const FORM=(()=>{try{if(!FORM_PREFILL)return null;const u=new URL(FORM_PREFILL),ids=[];
   for(const [k,v] of u.searchParams)if(/^entry\.\d+$/.test(k)&&/^\d+$/.test(v.trim()))ids[+v.trim()]=k;
-  const need=1+CATS.length*2;for(let i=1;i<=need;i++)if(!ids[i])return null;
+  const nq=CATS.length*2;
+  /* Email collecté par Google Forms (Paramètres > Réponses) : les 20 questions sont numérotées de 1 à 20 */
+  if(!ids[nq+1]){ids.unshift(undefined);ids[1]='emailAddress'}
+  for(let i=1;i<=nq+1;i++)if(!ids[i])return null;
   return {action:u.origin+u.pathname.replace(/\/viewform$/,'/formResponse'),ids}}catch(e){return null}})();
 const store={get(){try{return JSON.parse(localStorage.getItem(LS)||'null')}catch(e){return null}},set(v){try{localStorage.setItem(LS,JSON.stringify(v))}catch(e){}}};
 const closed=()=>Date.now()>=DEADLINE;
